@@ -1,0 +1,33 @@
+/* ─── Dock 栏 ─── */
+
+.dock {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    padding: 10px 20px;
+    padding-bottom: max(14px, env(safe-area-inset-bottom));
+    margin: 0 12px 8px;
+    background: rgba(255, 255, 255, 0.58);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(255, 255, 255, 0.88);
+    border-radius: 28px;
+    box-shadow:
+        0 4px 20px rgba(180, 195, 215, 0.35),
+        0 1px 4px rgba(180, 195, 215, 0.2);
+    flex-shrink: 0;
+}
+
+/* Dock 内的图标复用 app-icon，局部覆写 */
+.dock .app-icon-shape {
+    width: 56px;
+    height: 56px;
+    border-radius: 15px;
+    background: rgba(255, 255, 255, 0.82);
+}
+
+.dock .app-icon-name {
+    font-size: 10px;
+}

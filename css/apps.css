@@ -1,0 +1,67 @@
+/* ─── APP 图标区 ─── */
+
+.app-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 14px 10px;
+    margin-bottom: 16px;
+}
+
+.app-icon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    cursor: pointer;
+    -webkit-user-select: none;
+    user-select: none;
+    transition: transform 0.15s ease;
+}
+
+.app-icon:active {
+    transform: scale(0.88);
+}
+
+/* 图标图形框 */
+.app-icon-shape {
+    width: 62px;
+    height: 62px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.72);
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
+    box-shadow:
+        0 2px 10px rgba(180, 195, 215, 0.3),
+        0 1px 3px rgba(180, 195, 215, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(6px);
+    transition: box-shadow 0.2s;
+}
+
+.app-icon:hover .app-icon-shape {
+    box-shadow:
+        0 4px 16px rgba(138, 171, 202, 0.35),
+        0 2px 6px rgba(138, 171, 202, 0.2);
+}
+
+/* 各APP图标的线条图案 */
+.app-icon-shape svg {
+    width: 32px;
+    height: 32px;
+}
+
+/* APP名称 */
+.app-icon-name {
+    font-size: 10.5px;
+    color: #4a5e72;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-align: center;
+    max-width: 68px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}

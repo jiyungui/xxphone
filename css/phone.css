@@ -1,0 +1,213 @@
+/* ─── 手机外壳 & 屏幕 ─── */
+
+/* ── 桌面端：显示手机壳 ── */
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    background: #c9d1dc;
+}
+
+.phone-shell {
+    position: relative;
+    width: 393px;
+    height: 852px;
+    border-radius: 50px;
+    background: #1a1a1a;
+    box-shadow:
+        0 0 0 2px #3a3a3a,
+        0 0 0 5px #1a1a1a,
+        0 30px 80px rgba(0, 0, 0, 0.45),
+        0 10px 30px rgba(0, 0, 0, 0.3);
+    overflow: hidden;
+    flex-shrink: 0;
+}
+
+/* 侧边按钮装饰 */
+.phone-shell::before {
+    content: '';
+    position: absolute;
+    left: -4px;
+    top: 120px;
+    width: 4px;
+    height: 36px;
+    background: #2e2e2e;
+    border-radius: 2px 0 0 2px;
+    box-shadow: 0 50px 0 #2e2e2e, 0 100px 0 #2e2e2e;
+    z-index: 10;
+}
+
+.phone-shell::after {
+    content: '';
+    position: absolute;
+    right: -4px;
+    top: 160px;
+    width: 4px;
+    height: 68px;
+    background: #2e2e2e;
+    border-radius: 0 2px 2px 0;
+    z-index: 10;
+}
+
+/* 屏幕区域 */
+.screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: #e8edf5;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+
+    /* 竖纹背景（韩ins风） */
+    background-image: repeating-linear-gradient(90deg,
+            transparent,
+            transparent 28px,
+            rgba(255, 255, 255, 0.55) 28px,
+            rgba(255, 255, 255, 0.55) 30px);
+    background-color: #dce4f0;
+}
+
+/* 状态栏 */
+.status-bar {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 26px 6px;
+    height: 48px;
+    flex-shrink: 0;
+}
+
+.status-time {
+    font-size: 13px;
+    font-weight: 600;
+    color: #4a5568;
+    letter-spacing: 0.5px;
+}
+
+.status-icons {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+/* 信号/wifi/电池 ── 纯线条 */
+.status-signal,
+.status-wifi,
+.status-battery {
+    display: inline-block;
+}
+
+.status-signal {
+    width: 16px;
+    height: 10px;
+    background:
+        linear-gradient(to top, #7a8fa6 0%, #7a8fa6 100%) no-repeat 0 100% / 3px 40%,
+        linear-gradient(to top, #7a8fa6 0%, #7a8fa6 100%) no-repeat 5px 100% / 3px 65%,
+        linear-gradient(to top, #7a8fa6 0%, #7a8fa6 100%) no-repeat 10px 100% / 3px 85%,
+        linear-gradient(to top, #7a8fa6 0%, #7a8fa6 100%) no-repeat 15px 100% / 3px 100%;
+}
+
+.status-wifi {
+    width: 14px;
+    height: 10px;
+    border: 2px solid #7a8fa6;
+    border-bottom: none;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+}
+
+.status-wifi::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 6px;
+    height: 4px;
+    border: 1.5px solid #7a8fa6;
+    border-bottom: none;
+    border-radius: 6px 6px 0 0;
+}
+
+.status-battery {
+    width: 22px;
+    height: 11px;
+    border: 1.5px solid #7a8fa6;
+    border-radius: 2px;
+    position: relative;
+}
+
+.status-battery::before {
+    content: '';
+    position: absolute;
+    right: -5px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 3px;
+    height: 5px;
+    background: #7a8fa6;
+    border-radius: 0 1px 1px 0;
+}
+
+.status-battery::after {
+    content: '';
+    position: absolute;
+    left: 2px;
+    top: 2px;
+    width: 13px;
+    height: 5px;
+    background: #7a8fa6;
+    border-radius: 1px;
+}
+
+/* 主滚动区 */
+.screen-scroll {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding: 8px 16px 16px;
+    /* 隐藏滚动条，保持美观 */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+.screen-scroll::-webkit-scrollbar {
+    display: none;
+}
+
+/* ── 移动端全屏（安装到桌面后） ── */
+@media (max-width: 430px),
+(display-mode: fullscreen),
+(display-mode: standalone) {
+    body {
+        background: #dce4f0;
+        display: block;
+    }
+
+    .phone-shell {
+        width: 100vw;
+        height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .phone-shell::before,
+    .phone-shell::after {
+        display: none;
+    }
+
+    .screen {
+        border-radius: 0;
+        height: 100%;
+        /* 适配刘海/安全区 */
+        padding-top: env(safe-area-inset-top);
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .status-bar {
+        padding-top: max(14px, env(safe-area-inset-top));
+    }
+}
