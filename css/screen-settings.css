@@ -1,0 +1,281 @@
+/* ─── 屏幕调整页专属样式 ─── */
+
+/* ── 色调滤镜覆盖层（挂在 .screen 下，绝对定位全覆盖，pointer-events:none） ── */
+.screen-filter-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    /* 高于内容，低于弹窗 */
+    mix-blend-mode: multiply;
+    opacity: 0;
+    transition: opacity 0.4s ease, background-color 0.4s ease;
+    border-radius: inherit;
+}
+
+.screen-filter-overlay.active {
+    opacity: 1;
+}
+
+/* 预置滤镜色 */
+.screen-filter-overlay[data-filter="vintage"] {
+    background: rgba(180, 140, 90, 0.22);
+    mix-blend-mode: multiply;
+}
+
+.screen-filter-overlay[data-filter="dopamine"] {
+    background: rgba(255, 100, 180, 0.15);
+    mix-blend-mode: screen;
+}
+
+.screen-filter-overlay[data-filter="cream"] {
+    background: rgba(255, 245, 220, 0.30);
+    mix-blend-mode: multiply;
+}
+
+.screen-filter-overlay[data-filter="cool"] {
+    background: rgba(100, 160, 230, 0.18);
+    mix-blend-mode: multiply;
+}
+
+.screen-filter-overlay[data-filter="forest"] {
+    background: rgba(80, 160, 100, 0.16);
+    mix-blend-mode: multiply;
+}
+
+.screen-filter-overlay[data-filter="dusk"] {
+    background: rgba(200, 130, 180, 0.18);
+    mix-blend-mode: multiply;
+}
+
+.screen-filter-overlay[data-filter="mono"] {
+    background: rgba(100, 100, 100, 0.0);
+    mix-blend-mode: normal;
+}
+
+/* mono 用 CSS filter 实现灰度 */
+.screen.filter-mono {
+    filter: grayscale(0.85);
+}
+
+/* ── 滤镜选项网格 ── */
+.filter-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-top: 2px;
+}
+
+.filter-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+}
+
+.filter-preview {
+    width: 100%;
+    aspect-ratio: 9/16;
+    max-height: 80px;
+    border-radius: 14px;
+    border: 2px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 2px 8px rgba(180, 195, 215, 0.25);
+    position: relative;
+    overflow: hidden;
+    transition: transform 0.15s, box-shadow 0.2s;
+    background: #dce8f4;
+}
+
+/* 各滤镜预览色 */
+.filter-preview[data-filter="none"] {
+    background: linear-gradient(160deg, #dce8f4 0%, #c8daea 100%);
+}
+
+.filter-preview[data-filter="vintage"] {
+    background: linear-gradient(160deg, #d4aa78 0%, #b8956a 100%);
+}
+
+.filter-preview[data-filter="dopamine"] {
+    background: linear-gradient(160deg, #ff9de2 0%, #b8a0ff 100%);
+}
+
+.filter-preview[data-filter="cream"] {
+    background: linear-gradient(160deg, #fff5dc 0%, #f5e8c4 100%);
+}
+
+.filter-preview[data-filter="cool"] {
+    background: linear-gradient(160deg, #a8d4f5 0%, #7ab8e8 100%);
+}
+
+.filter-preview[data-filter="forest"] {
+    background: linear-gradient(160deg, #a8d4a8 0%, #7ab87a 100%);
+}
+
+.filter-preview[data-filter="dusk"] {
+    background: linear-gradient(160deg, #e8b4d8 0%, #c890b8 100%);
+}
+
+.filter-preview[data-filter="mono"] {
+    background: linear-gradient(160deg, #c8c8c8 0%, #a0a0a0 100%);
+}
+
+.filter-item.active .filter-preview {
+    border-color: #8aabca;
+    box-shadow: 0 0 0 2px #8aabca, 0 3px 10px rgba(138, 171, 202, 0.4);
+    transform: scale(1.04);
+}
+
+.filter-label {
+    font-size: 10.5px;
+    color: #7a93aa;
+    font-weight: 500;
+    letter-spacing: 0.2px;
+    text-align: center;
+}
+
+.filter-item.active .filter-label {
+    color: #3d5068;
+    font-weight: 700;
+}
+
+/* ── 开关行（隐藏状态栏等） ── */
+.ss-switch-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 4px 2px;
+}
+
+.ss-switch-label {
+    font-size: 13px;
+    color: #3d5068;
+    font-weight: 500;
+}
+
+.ss-switch-desc {
+    font-size: 11px;
+    color: #a8bece;
+    margin-top: 2px;
+}
+
+.ss-switch-text {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex: 1;
+}
+
+/* iOS风格开关 */
+.ss-toggle {
+    position: relative;
+    width: 44px;
+    height: 26px;
+    flex-shrink: 0;
+}
+
+.ss-toggle input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+}
+
+.ss-toggle-track {
+    position: absolute;
+    inset: 0;
+    border-radius: 13px;
+    background: rgba(138, 171, 202, 0.25);
+    border: 1.5px solid rgba(138, 171, 202, 0.3);
+    transition: background 0.25s, border-color 0.25s;
+    cursor: pointer;
+}
+
+.ss-toggle input:checked+.ss-toggle-track {
+    background: #8aabca;
+    border-color: #7a9dbc;
+}
+
+.ss-toggle-track::after {
+    content: '';
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+    transition: transform 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.ss-toggle input:checked+.ss-toggle-track::after {
+    transform: translateX(18px);
+}
+
+/* ── 位置调整（上下左右偏移滑块） ── */
+.ss-offset-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+/* ── 屏幕预览小图 ── */
+.ss-preview-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 4px 0 2px;
+}
+
+.ss-preview-phone {
+    width: 72px;
+    height: 130px;
+    border-radius: 14px;
+    background: #c8d8ea;
+    border: 2.5px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 4px 16px rgba(138, 171, 202, 0.3);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s;
+}
+
+.ss-preview-screen {
+    width: 58px;
+    height: 100px;
+    border-radius: 8px;
+    background: #dce8f4;
+    position: absolute;
+    transition: transform 0.3s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 6px 5px;
+}
+
+.ss-preview-bar {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(138, 171, 202, 0.5);
+    width: 70%;
+    align-self: flex-end;
+}
+
+.ss-preview-line {
+    height: 3px;
+    border-radius: 2px;
+    background: rgba(138, 171, 202, 0.3);
+}
+
+.ss-preview-line:nth-child(2) {
+    width: 90%;
+}
+
+.ss-preview-line:nth-child(3) {
+    width: 75%;
+}
+
+.ss-preview-line:nth-child(4) {
+    width: 85%;
+}

@@ -1,12 +1,22 @@
 /* ─── 手机外壳 & 屏幕 ─── */
 
+:root {
+    --screen-bg: #dce8f4;
+    /* ★ 改为淡蓝色 */
+    --stripe-color: transparent;
+    /* ★ 条纹透明（等同关闭） */
+    --status-color: #4a5568;
+    --icon-signal-color: #7a8fa6;
+}
+
 /* ── 桌面端：显示手机壳 ── */
 body {
     display: flex;
     align-items: center;
     justify-content: center;
     min-height: 100vh;
-    background: #c9d1dc;
+    background: #c9d4e0;
+    /* ★ 外壳背景也同步偏蓝 */
 }
 
 .phone-shell {
@@ -55,18 +65,13 @@ body {
     position: relative;
     width: 100%;
     height: 100%;
-    background: #e8edf5;
+    background: var(--screen-bg);
+    /* ★ 纯淡蓝，无条纹 */
+    background-image: none;
+    /* ★ 明确关闭条纹 */
     overflow: hidden;
     display: flex;
     flex-direction: column;
-
-    /* 竖纹背景（韩ins风） */
-    background-image: repeating-linear-gradient(90deg,
-            transparent,
-            transparent 28px,
-            rgba(255, 255, 255, 0.55) 28px,
-            rgba(255, 255, 255, 0.55) 30px);
-    background-color: #dce4f0;
 }
 
 /* 状态栏 */
@@ -84,7 +89,7 @@ body {
 .status-time {
     font-size: 13px;
     font-weight: 600;
-    color: #4a5568;
+    color: var(--status-color);
     letter-spacing: 0.5px;
 }
 
@@ -94,7 +99,6 @@ body {
     gap: 6px;
 }
 
-/* 信号/wifi/电池 ── 纯线条 */
 .status-signal,
 .status-wifi,
 .status-battery {
@@ -105,16 +109,16 @@ body {
     width: 16px;
     height: 10px;
     background:
-        linear-gradient(to top, #7a8fa6 0%, #7a8fa6 100%) no-repeat 0 100% / 3px 40%,
-        linear-gradient(to top, #7a8fa6 0%, #7a8fa6 100%) no-repeat 5px 100% / 3px 65%,
-        linear-gradient(to top, #7a8fa6 0%, #7a8fa6 100%) no-repeat 10px 100% / 3px 85%,
-        linear-gradient(to top, #7a8fa6 0%, #7a8fa6 100%) no-repeat 15px 100% / 3px 100%;
+        linear-gradient(to top, var(--icon-signal-color) 0%, var(--icon-signal-color) 100%) no-repeat 0 100% / 3px 40%,
+        linear-gradient(to top, var(--icon-signal-color) 0%, var(--icon-signal-color) 100%) no-repeat 5px 100% / 3px 65%,
+        linear-gradient(to top, var(--icon-signal-color) 0%, var(--icon-signal-color) 100%) no-repeat 10px 100% / 3px 85%,
+        linear-gradient(to top, var(--icon-signal-color) 0%, var(--icon-signal-color) 100%) no-repeat 15px 100% / 3px 100%;
 }
 
 .status-wifi {
     width: 14px;
     height: 10px;
-    border: 2px solid #7a8fa6;
+    border: 2px solid var(--icon-signal-color);
     border-bottom: none;
     border-radius: 10px 10px 0 0;
     position: relative;
@@ -127,7 +131,7 @@ body {
     left: 2px;
     width: 6px;
     height: 4px;
-    border: 1.5px solid #7a8fa6;
+    border: 1.5px solid var(--icon-signal-color);
     border-bottom: none;
     border-radius: 6px 6px 0 0;
 }
@@ -135,7 +139,7 @@ body {
 .status-battery {
     width: 22px;
     height: 11px;
-    border: 1.5px solid #7a8fa6;
+    border: 1.5px solid var(--icon-signal-color);
     border-radius: 2px;
     position: relative;
 }
@@ -148,7 +152,7 @@ body {
     transform: translateY(-50%);
     width: 3px;
     height: 5px;
-    background: #7a8fa6;
+    background: var(--icon-signal-color);
     border-radius: 0 1px 1px 0;
 }
 
@@ -159,7 +163,7 @@ body {
     top: 2px;
     width: 13px;
     height: 5px;
-    background: #7a8fa6;
+    background: var(--icon-signal-color);
     border-radius: 1px;
 }
 
@@ -169,7 +173,6 @@ body {
     overflow-y: auto;
     overflow-x: hidden;
     padding: 8px 16px 16px;
-    /* 隐藏滚动条，保持美观 */
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -178,18 +181,21 @@ body {
     display: none;
 }
 
-/* ── 移动端全屏（安装到桌面后） ── */
-@media (max-width: 430px),
-(display-mode: fullscreen),
-(display-mode: standalone) {
+/* ══════════════════════════════
+   手机端全屏适配
+══════════════════════════════ */
+@media screen and (max-width: 480px) {
     body {
-        background: #dce4f0;
+        background: var(--screen-bg);
         display: block;
+        padding: 0;
+        margin: 0;
     }
 
     .phone-shell {
         width: 100vw;
         height: 100vh;
+        height: 100dvh;
         border-radius: 0;
         box-shadow: none;
     }
@@ -201,13 +207,57 @@ body {
 
     .screen {
         border-radius: 0;
+        width: 100%;
         height: 100%;
-        /* 适配刘海/安全区 */
-        padding-top: env(safe-area-inset-top);
-        padding-bottom: env(safe-area-inset-bottom);
     }
 
     .status-bar {
-        padding-top: max(14px, env(safe-area-inset-top));
+        padding-top: max(14px, env(safe-area-inset-top, 14px));
+        padding-left: max(20px, env(safe-area-inset-left, 20px));
+        padding-right: max(20px, env(safe-area-inset-right, 20px));
+        height: auto;
+        min-height: 48px;
+    }
+
+    .screen-scroll {
+        padding-left: max(14px, env(safe-area-inset-left, 14px));
+        padding-right: max(14px, env(safe-area-inset-right, 14px));
+        padding-bottom: 24px;
+    }
+}
+
+/* PWA 全屏模式 */
+@media (display-mode: fullscreen),
+(display-mode: standalone) {
+    body {
+        background: var(--screen-bg);
+        display: block;
+        padding: 0;
+        margin: 0;
+    }
+
+    .phone-shell {
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .phone-shell::before,
+    .phone-shell::after {
+        display: none;
+    }
+
+    .screen {
+        border-radius: 0;
+    }
+
+    .status-bar {
+        padding-top: max(14px, env(safe-area-inset-top, 14px));
+    }
+
+    .screen-scroll {
+        padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
     }
 }

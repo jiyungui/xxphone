@@ -1,11 +1,11 @@
 /**
  * apps.js
- * APP图标数据 + SVG图标 + 渲染逻辑
+ * APP图标数据 + SVG图标 + 渲染
+ * ★ 设置APP点击 → Router.push('settings')
  */
 
 const Apps = (() => {
 
-    // ── SVG图标定义（纯线条，韩ins风） ──
     const ICONS = {
         chat: `<svg viewBox="0 0 32 32" fill="none" stroke="#7a93aa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M6 8h20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H10l-5 4V10a2 2 0 0 1 1-2z"/>
@@ -19,13 +19,15 @@ const Apps = (() => {
 
         voice: `<svg viewBox="0 0 32 32" fill="none" stroke="#7a93aa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M16 4a4 4 0 0 1 4 4v8a4 4 0 0 1-8 0V8a4 4 0 0 1 4-4z"/>
-      <path d="M8 18a8 8 0 0 0 16 0"/><line x1="16" y1="26" x2="16" y2="29"/>
+      <path d="M8 18a8 8 0 0 0 16 0"/>
+      <line x1="16" y1="26" x2="16" y2="29"/>
       <line x1="12" y1="29" x2="20" y2="29"/>
     </svg>`,
 
         forum: `<svg viewBox="0 0 32 32" fill="none" stroke="#7a93aa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <rect x="4" y="6" width="16" height="12" rx="2"/>
-      <path d="M8 22h16a2 2 0 0 0 2-2v-8"/><line x1="8" y1="11" x2="16" y2="11"/>
+      <path d="M8 22h16a2 2 0 0 0 2-2v-8"/>
+      <line x1="8" y1="11" x2="16" y2="11"/>
       <line x1="8" y1="14" x2="13" y2="14"/>
     </svg>`,
 
@@ -52,7 +54,8 @@ const Apps = (() => {
 
         music: `<svg viewBox="0 0 32 32" fill="none" stroke="#7a93aa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
       <path d="M12 26V10l14-4v16"/>
-      <circle cx="9" cy="26" r="3"/><circle cx="23" cy="22" r="3"/>
+      <circle cx="9" cy="26" r="3"/>
+      <circle cx="23" cy="22" r="3"/>
     </svg>`,
 
         settings: `<svg viewBox="0 0 32 32" fill="none" stroke="#7a93aa" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
@@ -63,20 +66,18 @@ const Apps = (() => {
     </svg>`,
     };
 
-    // ── APP 定义 ──
     const APP_LIST = [
-        { id: 'chat', name: '聊天', icon: 'chat', area: 'dock' },
-        { id: 'worldbook', name: '世界书', icon: 'worldbook', area: 'dock' },
-        { id: 'settings', name: '设置', icon: 'settings', area: 'dock' },
-        { id: 'voice', name: '心声', icon: 'voice', area: 'grid' },
-        { id: 'forum', name: '论坛', icon: 'forum', area: 'grid' },
-        { id: 'diary', name: '小芽日记', icon: 'diary', area: 'grid' },
-        { id: 'street', name: '街の声', icon: 'street', area: 'grid' },
-        { id: 'writing', name: '笔X阁', icon: 'writing', area: 'grid' },
-        { id: 'music', name: '音乐', icon: 'music', area: 'grid' },
+        { id: 'chat', name: '聊天', icon: 'chat', area: 'dock', route: null },
+        { id: 'worldbook', name: '世界书', icon: 'worldbook', area: 'dock', route: null },
+        { id: 'settings', name: '设置', icon: 'settings', area: 'dock', route: 'settings' },
+        { id: 'voice', name: '心声', icon: 'voice', area: 'grid', route: null },
+        { id: 'forum', name: '论坛', icon: 'forum', area: 'grid', route: null },
+        { id: 'diary', name: '小芽日记', icon: 'diary', area: 'grid', route: null },
+        { id: 'street', name: '街の声', icon: 'street', area: 'grid', route: null },
+        { id: 'writing', name: '笔X阁', icon: 'writing', area: 'grid', route: null },
+        { id: 'music', name: '音乐', icon: 'music', area: 'grid', route: null },
     ];
 
-    /** 创建单个图标的 DOM 元素 */
     function createIconEl(app) {
         const wrap = document.createElement('div');
         wrap.className = 'app-icon';
@@ -93,42 +94,38 @@ const Apps = (() => {
         wrap.appendChild(shape);
         wrap.appendChild(name);
 
-        // 点击事件（占位，后续可跳转页面）
-        wrap.addEventListener('click', () => {
-            onAppClick(app);
-        });
-
+        wrap.addEventListener('click', () => onAppClick(app));
         return wrap;
     }
 
-    /** APP点击处理 */
     function onAppClick(app) {
-        // 轻触反馈
+        // ★ 有路由的APP走SPA路由
+        if (app.route) {
+            Router.push(app.route);
+            return;
+        }
+        // 其他APP后续开发时在此扩展
         console.log('[App] click:', app.id);
-        // 后续：跳转对应模块页面，如 window.location.href = `pages/${app.id}.html`
     }
 
-    /** 渲染 Dock */
     function renderDock() {
         const dock = document.getElementById('dock');
         if (!dock) return;
         dock.innerHTML = '';
-        APP_LIST
-            .filter(a => a.area === 'dock')
-            .forEach(app => dock.appendChild(createIconEl(app)));
+        APP_LIST.filter(a => a.area === 'dock').forEach(app => {
+            dock.appendChild(createIconEl(app));
+        });
     }
 
-    /** 渲染 APP Grid */
     function renderGrid() {
         const grid = document.getElementById('appGrid');
         if (!grid) return;
         grid.innerHTML = '';
-        APP_LIST
-            .filter(a => a.area === 'grid')
-            .forEach(app => grid.appendChild(createIconEl(app)));
+        APP_LIST.filter(a => a.area === 'grid').forEach(app => {
+            grid.appendChild(createIconEl(app));
+        });
     }
 
-    /** 初始化 */
     function init() {
         renderDock();
         renderGrid();

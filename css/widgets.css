@@ -78,8 +78,7 @@
     transition: background 0.2s;
 }
 
-.banner-motto:hover,
-.banner-motto.editing {
+.banner-motto:hover {
     background: rgba(180, 200, 220, 0.2);
 }
 
@@ -89,6 +88,7 @@
     height: 18px;
     position: relative;
     opacity: 0.45;
+    flex-shrink: 0;
 }
 
 .banner-paw::before {
@@ -192,80 +192,83 @@
     cursor: pointer;
 }
 
-/* ── 左侧：拍立得小组件 ── */
+/* ── 左侧：拍立得小组件（白色主题） ── */
 .widget-polaroid {
     flex: 1.1;
     aspect-ratio: 1 / 1;
     min-width: 0;
+    position: relative;
 }
 
 /* 叠放效果 */
 .polaroid-stack {
     position: absolute;
     inset: 0;
-    border-radius: 6px;
+    border-radius: 14px;
 }
 
 .polaroid-back {
-    background: #2a2a2a;
+    background: #e8e8e8;
     transform: rotate(-4deg) translate(-3px, 4px);
     z-index: 1;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
 }
 
 .polaroid-front {
     position: absolute;
     inset: 0;
-    background: #1c1c1c;
-    border-radius: 6px;
+    /* ★ 改为白色背景 */
+    background: #ffffff;
+    border-radius: 14px;
     z-index: 2;
     display: flex;
     flex-direction: column;
     overflow: hidden;
-    padding: 6px 6px 0;
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+    padding: 8px 8px 0;
+    box-shadow: 0 4px 18px rgba(180, 195, 215, 0.35), 0 1px 4px rgba(180, 195, 215, 0.2);
+    border: 1.5px solid rgba(255, 255, 255, 0.95);
 }
 
-/* 回形针（纯CSS） */
+/* 回形针（纯CSS，改深灰色适配白色背景） */
 .polaroid-clip {
     position: absolute;
     top: -14px;
     left: 50%;
     transform: translateX(-50%);
     z-index: 10;
-    width: 20px;
-    height: 28px;
-    border: 2.5px solid #222;
-    border-radius: 10px 10px 0 0;
+    width: 18px;
+    height: 26px;
+    border: 2.5px solid #8aa4be;
+    border-radius: 9px 9px 0 0;
     background: transparent;
 }
 
 .polaroid-clip::after {
     content: '';
     position: absolute;
-    top: 6px;
+    top: 5px;
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    height: 16px;
-    border-left: 2.5px solid #222;
-    border-right: 2.5px solid #222;
-    border-radius: 0 0 4px 4px;
+    height: 14px;
+    border-left: 2.5px solid #8aa4be;
+    border-right: 2.5px solid #8aa4be;
+    border-radius: 0 0 3px 3px;
 }
 
 /* 图片区 */
 .polaroid-img-wrap {
     flex: 1;
-    border-radius: 3px;
+    border-radius: 8px;
     overflow: hidden;
     position: relative;
-    background: #2d2d2d;
+    background: #f0f4f8;
 }
 
 .polaroid-img {
     width: 100%;
     height: 100%;
     object-fit: cover;
-    filter: grayscale(15%);
 }
 
 .polaroid-img-placeholder {
@@ -274,21 +277,30 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #2d2d2d;
+    background: #f0f4f8;
 }
 
-/* 底部文字条 */
+/* 底部文字条（白色背景下用深色文字） */
 .polaroid-caption {
-    padding: 6px 8px;
+    padding: 6px 8px 8px;
     flex-shrink: 0;
 }
 
 .polaroid-text {
     font-size: 11px;
-    color: rgba(255, 255, 255, 0.75);
+    /* ★ 改为深色文字 */
+    color: #5a7890;
     font-style: italic;
     letter-spacing: 0.5px;
     cursor: pointer;
+    border-radius: 4px;
+    padding: 1px 2px;
+    transition: background 0.2s;
+    display: block;
+}
+
+.polaroid-text:hover {
+    background: rgba(138, 171, 202, 0.1);
 }
 
 /* ── 右侧：小图片框 ── */

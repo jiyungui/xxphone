@@ -7,29 +7,32 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="HomeScreen" />
-    <meta name="theme-color" content="#e8edf5" />
+    <meta name="theme-color" content="#dce8f4" />
     <link rel="manifest" href="manifest.json" />
     <link rel="apple-touch-icon" href="icons/icon-192.png" />
     <title>HomeScreen</title>
 
-    <!-- CSS -->
+    <!-- CSS：基础 -->
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/phone.css" />
     <link rel="stylesheet" href="css/widgets.css" />
     <link rel="stylesheet" href="css/apps.css" />
     <link rel="stylesheet" href="css/dock.css" />
+    <!-- CSS：内页 -->
+    <link rel="stylesheet" href="css/pages.css" />
+    <link rel="stylesheet" href="css/settings.css" />
+    <link rel="stylesheet" href="css/api-settings.css" />
+    <!-- ★ 新增：屏幕调整页样式 -->
+    <link rel="stylesheet" href="css/screen-settings.css" />
 </head>
 
 <body>
 
-    <!-- 手机外壳（桌面端可见，移动端全屏） -->
     <div class="phone-shell" id="phoneShell">
-
-        <!-- 屏幕主体 -->
         <div class="screen" id="screen">
 
-            <!-- 状态栏 -->
-            <div class="status-bar">
+            <!-- ══ 状态栏（始终显示） ══ -->
+            <div class="status-bar" id="statusBar">
                 <span class="status-time" id="statusTime">00:00</span>
                 <div class="status-icons">
                     <span class="status-signal"></span>
@@ -38,92 +41,93 @@
                 </div>
             </div>
 
-            <!-- 可滚动主内容区 -->
-            <div class="screen-scroll" id="screenScroll">
+            <!-- ══ 屏幕整体色调滤镜层（screen-settings 控制） ══ -->
+            <div class="screen-filter-overlay" id="screenFilterOverlay"></div>
 
-                <!-- ═══ 顶部小组件区（参考图1 ins风格） ═══ -->
-                <section class="widget-top" id="widgetTop">
+            <!-- ══ 页面容器 ══ -->
+            <div class="page-container" id="pageContainer">
 
-                    <!-- 头像 + 文案横幅 -->
-                    <div class="widget-banner" id="widgetBanner">
-                        <div class="banner-avatar-wrap">
-                            <img class="banner-avatar" id="bannerAvatar" src="" alt="avatar"
-                                onerror="this.style.display='none'" />
-                            <div class="banner-avatar-placeholder" id="bannerAvatarPlaceholder"></div>
-                        </div>
-                        <div class="banner-text-wrap">
-                            <p class="banner-motto" id="bannerMotto" contenteditable="false">幸好爱是小小的奇迹</p>
-                            <div class="banner-paw"></div>
-                        </div>
-                    </div>
+                <!-- ── 主屏幕页 ── -->
+                <div class="page page-home active" id="pageHome">
+                    <div class="screen-scroll" id="screenScroll">
 
-                    <!-- Baby / Contact 行 -->
-                    <div class="banner-info-row">
-                        <div class="info-item">
-                            <span class="info-label">Baby</span>
-                            <span class="info-value" id="infoBaby" contenteditable="false">call Aero</span>
-                            <span class="info-edit-btn" data-target="infoBaby">修改</span>
-                        </div>
-                        <div class="info-item">
-                            <span class="info-label">Contact</span>
-                            <span class="info-value" id="infoContact" contenteditable="false">http//>Aero's
-                                love.com</span>
-                        </div>
-                    </div>
-
-                </section>
-
-                <!-- ═══ 中间两个正方形小组件 ═══ -->
-                <section class="widget-row" id="widgetRow">
-
-                    <!-- 左侧：拍立得风格小组件（参考p2） -->
-                    <div class="widget-card widget-polaroid" id="widgetPolaroid">
-                        <div class="polaroid-clip"></div>
-                        <div class="polaroid-stack polaroid-back"></div>
-                        <div class="polaroid-stack polaroid-front">
-                            <div class="polaroid-img-wrap">
-                                <img class="polaroid-img" id="polaroidImg" src="" alt=""
-                                    onerror="this.style.display='none'" />
-                                <div class="polaroid-img-placeholder" id="polaroidPlaceholder">
-                                    <span class="upload-hint">点击换图</span>
+                        <section class="widget-top" id="widgetTop">
+                            <div class="widget-banner" id="widgetBanner">
+                                <div class="banner-avatar-wrap">
+                                    <img class="banner-avatar" id="bannerAvatar" src="" alt="avatar"
+                                        onerror="this.style.display='none'" />
+                                    <div class="banner-avatar-placeholder" id="bannerAvatarPlaceholder"></div>
+                                </div>
+                                <div class="banner-text-wrap">
+                                    <p class="banner-motto" id="bannerMotto" contenteditable="false">幸好爱是小小的奇迹</p>
+                                    <div class="banner-paw"></div>
                                 </div>
                             </div>
-                            <div class="polaroid-caption">
-                                <span class="polaroid-text" id="polaroidText" contenteditable="false">First
-                                    Choice</span>
+                            <div class="banner-info-row">
+                                <div class="info-item">
+                                    <span class="info-label">Baby</span>
+                                    <span class="info-value" id="infoBaby" contenteditable="false">call Aero</span>
+                                    <span class="info-edit-btn" data-target="infoBaby">修改</span>
+                                </div>
+                                <div class="info-item">
+                                    <span class="info-label">Contact</span>
+                                    <span class="info-value" id="infoContact" contenteditable="false">http//>Aero's
+                                        love.com</span>
+                                </div>
                             </div>
-                        </div>
-                        <!-- 隐藏的文件上传 -->
-                        <input type="file" accept="image/*" id="polaroidFileInput" class="hidden-input" />
-                    </div>
+                        </section>
 
-                    <!-- 右侧：小正方形图片框 -->
-                    <div class="widget-card widget-photo-box" id="widgetPhotoBox">
-                        <img class="photo-box-img" id="photoBoxImg" src="" alt="" onerror="this.style.display='none'" />
-                        <div class="photo-box-placeholder" id="photoBoxPlaceholder">
-                            <span class="upload-hint">点击换图</span>
-                        </div>
-                        <input type="file" accept="image/*" id="photoBoxFileInput" class="hidden-input" />
-                    </div>
+                        <section class="widget-row" id="widgetRow">
+                            <div class="widget-card widget-polaroid" id="widgetPolaroid">
+                                <div class="polaroid-clip"></div>
+                                <div class="polaroid-stack polaroid-back"></div>
+                                <div class="polaroid-stack polaroid-front">
+                                    <div class="polaroid-img-wrap">
+                                        <img class="polaroid-img" id="polaroidImg" src="" alt=""
+                                            onerror="this.style.display='none'" />
+                                        <div class="polaroid-img-placeholder" id="polaroidPlaceholder">
+                                            <span class="upload-hint">点击换图</span>
+                                        </div>
+                                    </div>
+                                    <div class="polaroid-caption">
+                                        <span class="polaroid-text" id="polaroidText" contenteditable="false">First
+                                            Choice</span>
+                                    </div>
+                                </div>
+                                <input type="file" accept="image/*" id="polaroidFileInput" class="hidden-input" />
+                            </div>
 
-                </section>
+                            <div class="widget-card widget-photo-box" id="widgetPhotoBox">
+                                <img class="photo-box-img" id="photoBoxImg" src="" alt=""
+                                    onerror="this.style.display='none'" />
+                                <div class="photo-box-placeholder" id="photoBoxPlaceholder">
+                                    <span class="upload-hint">点击换图</span>
+                                </div>
+                                <input type="file" accept="image/*" id="photoBoxFileInput" class="hidden-input" />
+                            </div>
+                        </section>
 
-                <!-- ═══ APP 图标区（6个，3列×2行） ═══ -->
-                <section class="app-grid" id="appGrid">
-                    <!-- 由 js/apps.js 动态渲染 -->
-                </section>
+                        <section class="app-grid" id="appGrid"></section>
 
-            </div><!-- /screen-scroll -->
+                    </div><!-- /screen-scroll -->
+                    <nav class="dock" id="dock"></nav>
+                </div><!-- /page-home -->
 
-            <!-- ═══ Dock 栏（聊天、世界书、设置） ═══ -->
-            <nav class="dock" id="dock">
-                <!-- 由 js/apps.js 动态渲染 -->
-            </nav>
+                <!-- ── 设置主页 ── -->
+                <div class="page page-settings" id="pageSettings"></div>
+
+                <!-- ── API 设置页 ── -->
+                <div class="page page-api-settings" id="pageApiSettings"></div>
+
+                <!-- ★ 屏幕调整页 ── -->
+                <div class="page page-screen-settings" id="pageScreenSettings"></div>
+
+            </div><!-- /page-container -->
 
         </div><!-- /screen -->
     </div><!-- /phone-shell -->
 
-    <!-- 编辑弹窗（通用） -->
+    <!-- 通用编辑弹窗 -->
     <div class="edit-modal" id="editModal">
         <div class="edit-modal-box">
             <p class="edit-modal-title" id="editModalTitle">编辑内容</p>
@@ -135,11 +139,17 @@
         </div>
     </div>
 
+    <div class="api-toast" id="apiToast"></div>
+
     <!-- JS -->
     <script src="js/storage.js"></script>
     <script src="js/grid.js"></script>
+    <script src="js/router.js"></script>
     <script src="js/apps.js"></script>
     <script src="js/widgets.js"></script>
+    <script src="js/settings.js"></script>
+    <script src="js/api-settings.js"></script>
+    <script src="js/screen-settings.js"></script>
     <script src="js/main.js"></script>
 
 </body>

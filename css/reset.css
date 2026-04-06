@@ -16,7 +16,8 @@ body {
     font-family: 'PingFang SC', 'Noto Sans KR', 'Apple SD Gothic Neo',
         'Helvetica Neue', Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
-    background: #d8dfe8;
+    background: #dce8f4;
+    /* ★ 改为淡蓝色 */
 }
 
 img {

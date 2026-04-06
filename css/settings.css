@@ -1,0 +1,131 @@
+/* ─── 设置主页 ─── */
+
+:root {
+    --card-bg: rgba(255, 255, 255, 0.78);
+    --card-border: rgba(255, 255, 255, 0.98);
+    --text-primary: #3d5068;
+    --text-secondary: #7a93aa;
+    --text-muted: #a8bece;
+    --accent: #8aabca;
+    --accent-light: rgba(138, 171, 202, 0.13);
+    --card-shadow: 0 3px 14px rgba(180, 195, 215, 0.28);
+    --inner-bg: #dce8f4;
+}
+
+.page-settings,
+.page-api-settings,
+.page-screen-settings {
+    background: var(--inner-bg) !important;
+    background-image: none !important;
+}
+
+.page-settings .inner-header,
+.page-api-settings .inner-header,
+.page-screen-settings .inner-header {
+    background: rgba(220, 232, 244, 0.92) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+.settings-subtitle {
+    font-size: 10.5px;
+    font-weight: 700;
+    color: var(--text-muted);
+    letter-spacing: 1.4px;
+    text-transform: uppercase;
+    padding: 0 4px;
+    margin: 14px 0 8px;
+}
+
+.settings-subtitle:first-child {
+    margin-top: 4px;
+}
+
+.settings-group {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    margin-bottom: 6px;
+}
+
+.settings-card {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    background: var(--card-bg);
+    border: 1.5px solid var(--card-border);
+    border-radius: 22px;
+    padding: 13px 15px;
+    box-shadow: var(--card-shadow);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    text-decoration: none;
+    color: inherit;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.2s, background 0.2s;
+    position: relative;
+}
+
+.settings-card:active {
+    transform: scale(0.975);
+    background: rgba(255, 255, 255, 0.92);
+    box-shadow: 0 2px 8px rgba(180, 195, 215, 0.18);
+}
+
+.card-icon-wrap {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    background: var(--accent-light);
+    border: 1.5px solid rgba(138, 171, 202, 0.18);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.card-icon-wrap svg {
+    width: 19px;
+    height: 19px;
+    color: var(--accent);
+    stroke: var(--accent);
+}
+
+.card-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.card-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.card-desc {
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.card-arrow {
+    flex-shrink: 0;
+    color: var(--text-muted);
+}
+
+.card-arrow svg {
+    width: 15px;
+    height: 15px;
+    display: block;
+}
+
+.settings-version {
+    text-align: center;
+    font-size: 11px;
+    color: var(--text-muted);
+    letter-spacing: 0.3px;
+    margin-top: 20px;
+    padding-bottom: 4px;
+}
