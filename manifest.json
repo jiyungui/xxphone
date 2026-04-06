@@ -2,20 +2,20 @@
     "name": "HomeScreen",
     "short_name": "HomeScreen",
     "description": "My personal homescreen simulator",
-    "start_url": "/index.html",
+    "start_url": "./index.html",
     "display": "fullscreen",
     "orientation": "portrait",
     "background_color": "#e8edf5",
     "theme_color": "#e8edf5",
     "icons": [
         {
-            "src": "icons/icon-192.png",
+            "src": "./icons/icon-192.png",
             "sizes": "192x192",
             "type": "image/png",
             "purpose": "any maskable"
         },
         {
-            "src": "icons/icon-512.png",
+            "src": "./icons/icon-512.png",
             "sizes": "512x512",
             "type": "image/png",
             "purpose": "any maskable"

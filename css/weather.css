@@ -1,0 +1,10 @@
+/* weather.css — Canvas 粒子天气不需要太多 CSS，主要靠 JS 绘制 */
+
+/* 确保 Canvas 不会捕获触摸/点击 */
+.weather-canvas {
+    pointer-events: none;
+    user-select: none;
+    -webkit-user-select: none;
+    /* 让 canvas 圆角与 screen 一致 */
+    border-radius: inherit;
+}

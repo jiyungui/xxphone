@@ -1,0 +1,284 @@
+/* ─── 壁纸层 ─── */
+.wallpaper-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    border-radius: inherit;
+    overflow: hidden;
+    /* 壁纸层在最底层，page-container 之下 */
+}
+
+/* 壁纸图片包裹层 */
+.wallpaper-img-wrap {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    /* 通过 JS 设置 background-image，不压缩 base64 图片质量 */
+    transition: opacity 0.4s ease;
+    /* ★ 不透明度由 CSS 变量控制，默认1 */
+    opacity: var(--wp-opacity, 1);
+    /* ★ 模糊由 CSS 变量控制，默认0 */
+    filter: blur(var(--wp-blur, 0px));
+    /* 模糊时防止边缘漏白 */
+    transform: scale(calc(1 + var(--wp-blur, 0) * 0.008));
+    will-change: filter, opacity;
+}
+
+/* 毛玻璃遮罩层（frosted glass 效果）*/
+.wallpaper-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--wp-overlay-color, transparent);
+    opacity: var(--wp-overlay-opacity, 0);
+    backdrop-filter: blur(var(--wp-frosted, 0px));
+    -webkit-backdrop-filter: blur(var(--wp-frosted, 0px));
+    transition: opacity 0.4s ease, backdrop-filter 0.4s ease;
+    pointer-events: none;
+}
+
+/* 确保 page-container 及其子页面背景透明，露出壁纸 */
+.page-container {
+    position: relative;
+    z-index: 1;
+}
+
+/* 主页背景透明 */
+.page-home {
+    background: transparent !important;
+}
+
+/* ─── 天气 Canvas 层 ─── */
+.weather-canvas {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+    pointer-events: none;
+    border-radius: inherit;
+}
+
+/* ─── 壁纸设置内页 ─── */
+.page-wallpaper-settings {
+    background: var(--inner-bg, #dce8f4) !important;
+    background-image: none !important;
+}
+
+.page-wallpaper-settings .inner-header {
+    background: rgba(220, 232, 244, 0.92) !important;
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+}
+
+/* ── 壁纸预览框 ── */
+.wp-preview-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 4px 0 6px;
+}
+
+.wp-preview-phone {
+    width: 90px;
+    height: 162px;
+    border-radius: 18px;
+    border: 2.5px solid rgba(255, 255, 255, 0.9);
+    box-shadow: 0 6px 24px rgba(138, 171, 202, 0.35);
+    overflow: hidden;
+    position: relative;
+    background: #c8d8ea;
+    flex-shrink: 0;
+}
+
+/* 预览图本体 */
+.wp-preview-img {
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    transition: all 0.3s;
+}
+
+/* 预览毛玻璃遮罩 */
+.wp-preview-overlay {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+
+/* 上传按钮覆盖区 */
+.wp-upload-btn {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.wp-upload-btn svg {
+    width: 22px;
+    height: 22px;
+    stroke: rgba(255, 255, 255, 0.9);
+    filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.3));
+}
+
+.wp-upload-hint {
+    font-size: 10px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 600;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+    letter-spacing: 0.3px;
+}
+
+/* 已有壁纸时，上传区变为半透明提示 */
+.wp-preview-phone.has-image .wp-upload-btn {
+    background: rgba(0, 0, 0, 0.22);
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+.wp-preview-phone.has-image:active .wp-upload-btn {
+    opacity: 1;
+}
+
+/* ── 滑块行（复用 api-settings 风格） ── */
+.wp-slider-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.wp-slider {
+    flex: 1;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+    background: linear-gradient(to right,
+            #8aabca 0%,
+            #8aabca var(--pct, 50%),
+            rgba(138, 171, 202, 0.2) var(--pct, 50%),
+            rgba(138, 171, 202, 0.2) 100%);
+    transition: background 0.1s;
+}
+
+.wp-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    border: 2px solid #8aabca;
+    box-shadow: 0 1px 4px rgba(138, 171, 202, 0.4);
+    cursor: pointer;
+    transition: transform 0.15s;
+}
+
+.wp-slider:active::-webkit-slider-thumb {
+    transform: scale(1.2);
+}
+
+.wp-slider-val {
+    font-size: 11.5px;
+    color: #7a93aa;
+    font-weight: 600;
+    min-width: 32px;
+    text-align: right;
+}
+
+/* ── 天气选项网格 ── */
+.weather-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 9px;
+    margin-top: 2px;
+}
+
+.weather-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    padding: 10px 6px 8px;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.6);
+    border: 1.5px solid rgba(255, 255, 255, 0.9);
+    cursor: pointer;
+    transition: transform 0.15s, box-shadow 0.2s, background 0.2s;
+    box-shadow: 0 2px 8px rgba(180, 195, 215, 0.18);
+}
+
+.weather-item:active {
+    transform: scale(0.95);
+}
+
+.weather-item.active {
+    background: rgba(138, 171, 202, 0.18);
+    border-color: #8aabca;
+    box-shadow: 0 0 0 2px rgba(138, 171, 202, 0.35),
+        0 3px 10px rgba(138, 171, 202, 0.25);
+}
+
+/* 天气图标（纯 SVG，无 emoji） */
+.weather-icon {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+    background: rgba(138, 171, 202, 0.12);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.weather-item.active .weather-icon {
+    background: rgba(138, 171, 202, 0.25);
+}
+
+.weather-icon svg {
+    width: 20px;
+    height: 20px;
+    stroke: #8aabca;
+    fill: none;
+    stroke-width: 1.6;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.weather-item.active .weather-icon svg {
+    stroke: #5a8ab0;
+}
+
+.weather-label {
+    font-size: 10.5px;
+    color: #7a93aa;
+    font-weight: 500;
+    text-align: center;
+    letter-spacing: 0.2px;
+}
+
+.weather-item.active .weather-label {
+    color: #3d5068;
+    font-weight: 700;
+}
+
+/* ── 天气强度滑块区 ── */
+.weather-intensity-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 2px 0;
+}
+
+.weather-intensity-label {
+    font-size: 11.5px;
+    color: #7a93aa;
+    white-space: nowrap;
+}

@@ -1,19 +1,19 @@
 // sw.js — Service Worker，支持离线访问与桌面安装
 const CACHE_NAME = 'homescreen-v1';
 const ASSETS = [
-    '/',
-    '/index.html',
-    '/manifest.json',
-    '/css/reset.css',
-    '/css/phone.css',
-    '/css/widgets.css',
-    '/css/apps.css',
-    '/css/dock.css',
-    '/js/storage.js',
-    '/js/grid.js',
-    '/js/apps.js',
-    '/js/widgets.js',
-    '/js/main.js'
+    './',
+    './index.html',
+    './manifest.json',
+    './css/reset.css',
+    './css/phone.css',
+    './css/widgets.css',
+    './css/apps.css',
+    './css/dock.css',
+    './js/storage.js',
+    './js/grid.js',
+    './js/apps.js',
+    './js/widgets.js',
+    './js/main.js'
 ];
 
 // 安装：预缓存所有静态资源

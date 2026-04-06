@@ -1,20 +1,13 @@
-/**
- * main.js
- * 应用初始化总入口
- */
-
 (function () {
 
-    // ── PWA Service Worker ──
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
+            navigator.serviceWorker.register('./sw.js')
                 .then(() => console.log('[SW] registered'))
                 .catch(e => console.warn('[SW] failed:', e));
         });
     }
 
-    // ── 状态栏时间 ──
     function updateTime() {
         const el = document.getElementById('statusTime');
         if (!el) return;
@@ -26,14 +19,15 @@
     updateTime();
     setInterval(updateTime, 10000);
 
-    // ── 初始化 ──
     function boot() {
-        Router.init();          // 路由初始化（主页设为active）
-        Apps.init();            // 渲染图标
-        Widgets.init();         // 小组件可编辑
-        Settings.init();        // 注册设置页到路由
-        ApiSettings.init();     // 注册API设置页到路由
-        ScreenSettings.init();  // ★ 注册屏幕调整页到路由 + 恢复持久化配置
+        Router.init();
+        Apps.init();
+        Widgets.init();
+        Settings.init();
+        ApiSettings.init();
+        ScreenSettings.init();
+        Weather.init();               // ★ 天气引擎初始化（恢复持久化天气配置）
+        WallpaperSettings.init();     // ★ 壁纸初始化（恢复壁纸 + 样式）
     }
 
     if (document.readyState === 'loading') {

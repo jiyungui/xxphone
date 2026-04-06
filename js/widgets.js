@@ -1,52 +1,54 @@
 /**
  * widgets.js
- * 所有小组件的可编辑逻辑
- * ★ 修复：图片持久化在刷新后依旧保留
+ * 小组件可编辑逻辑
+ *
+ * 图片：调用 Storage.getWidgetImage / setWidgetImage（→ IndexedDB Blob）
+ * 文字：调用 Storage.getWidgetText / setWidgetText（→ localStorage）
  */
 
 const Widgets = (() => {
+    'use strict';
 
-    // ════════════════════════════════
-    //  通用：图片工具
-    // ════════════════════════════════
-
-    /** 将 File 读取为 base64，返回 Promise */
-    function readFileAsBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = (e) => resolve(e.target.result);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }
+    /* ══════════════════════════════════════════
+       工具：UI 显示
+    ══════════════════════════════════════════ */
 
     /**
-     * 设置图片显示状态
-     * src 有值 → 显示 img，隐藏 placeholder
-     * src 无值 → 隐藏 img，显示 placeholder
+     * 把 url 应用到 img 元素，同时切换 placeholder 显示
+     * url 为 null 时还原为占位状态
      */
-    function applyImage(imgId, placeholderId, src) {
+    function applyImage(imgId, placeholderId, url) {
         const img = document.getElementById(imgId);
         const ph = document.getElementById(placeholderId);
-        if (!img || !ph) return;
-        if (src) {
-            img.src = src;
-            img.style.display = 'block';
-            ph.style.display = 'none';
-        } else {
-            img.style.display = 'none';
-            ph.style.display = 'flex';
+        if (img) {
+            if (url) {
+                img.src = url;
+                img.style.display = 'block';
+            } else {
+                img.src = '';
+                img.style.display = 'none';
+            }
+        }
+        if (ph) {
+            ph.style.display = url ? 'none' : 'flex';
         }
     }
 
+    /* ══════════════════════════════════════════
+       工具：图片上传绑定
+       triggerEl 被点击 → 触发 input → 存 IndexedDB → 回调
+    ══════════════════════════════════════════ */
+
     /**
-     * 绑定可点击元素 → 触发文件选择 → 读base64 → 回调
-     * @param {HTMLElement} triggerEl  - 触发点击的容器元素
-     * @param {string}      inputId    - file input 的 id
-     * @param {Function}    onImage    - callback(base64)
+     * @param {HTMLElement} triggerEl   点击触发区域
+     * @param {string}      inputId     file input id（可已存在于 HTML 中）
+     * @param {Function}    onUrl       callback(objectURL: string) 存完后调用
+     * @param {Object}      [opts]
+     * @param {Function}    [opts.skipIf]  (e: Event) => bool，返回 true 则跳过
      */
-    function bindImageUpload(triggerEl, inputId, onImage) {
+    function bindImageUpload(triggerEl, inputId, onUrl, opts = {}) {
         if (!triggerEl) return;
+
         let input = document.getElementById(inputId);
         if (!input) {
             input = document.createElement('input');
@@ -57,28 +59,32 @@ const Widgets = (() => {
             document.body.appendChild(input);
         }
 
-        triggerEl.addEventListener('click', (e) => {
-            // 如果点击的是文字区域，不触发图片上传（由文字自己处理）
-            if (e.target.closest('.polaroid-caption')) return;
+        triggerEl.addEventListener('click', e => {
+            if (opts.skipIf && opts.skipIf(e)) return;
             input.click();
         });
 
         input.addEventListener('change', async () => {
-            const file = input.files[0];
+            const file = input.files?.[0];
             if (!file) return;
+            input.value = ''; // 允许重复选同一文件
+
             try {
-                const base64 = await readFileAsBase64(file);
-                onImage(base64);
+                // ★ 直接存原始 File Blob，不经 canvas 压缩
+                const url = await Storage.setWidgetImage(
+                    input.id.replace('FileInput', '').replace('Input', ''),
+                    file
+                );
+                onUrl(url);
             } catch (e) {
-                console.warn('[Widgets] 图片读取失败:', e);
+                console.warn('[Widgets] 图片上传失败:', e);
             }
-            input.value = '';
         });
     }
 
-    // ════════════════════════════════
-    //  通用：弹窗编辑
-    // ════════════════════════════════
+    /* ══════════════════════════════════════════
+       弹窗编辑
+    ══════════════════════════════════════════ */
 
     let _editCallback = null;
 
@@ -91,15 +97,12 @@ const Widgets = (() => {
         titleEl.textContent = title;
         input.value = currentValue || '';
         modal.classList.add('visible');
-
-        // 延迟聚焦，避免 iOS Safari 弹窗动画干扰
         setTimeout(() => { input.focus(); input.select(); }, 100);
         _editCallback = onConfirm;
     }
 
     function closeEditModal() {
-        const modal = document.getElementById('editModal');
-        if (modal) modal.classList.remove('visible');
+        document.getElementById('editModal')?.classList.remove('visible');
         _editCallback = null;
     }
 
@@ -109,171 +112,230 @@ const Widgets = (() => {
             if (_editCallback) _editCallback(val);
             closeEditModal();
         });
-
         document.getElementById('editModalCancel')?.addEventListener('click', closeEditModal);
-
-        document.getElementById('editModal')?.addEventListener('click', (e) => {
+        document.getElementById('editModal')?.addEventListener('click', e => {
             if (e.target === e.currentTarget) closeEditModal();
         });
-
-        document.getElementById('editModalInput')?.addEventListener('keydown', (e) => {
+        document.getElementById('editModalInput')?.addEventListener('keydown', e => {
             if (e.key === 'Enter') document.getElementById('editModalConfirm')?.click();
             if (e.key === 'Escape') closeEditModal();
         });
     }
 
-    // ════════════════════════════════
-    //  头像（★ 持久化修复）
-    // ════════════════════════════════
+    /* ══════════════════════════════════════════
+       头像
+    ══════════════════════════════════════════ */
 
-    function initBannerAvatar() {
+    async function initBannerAvatar() {
+        // 1. 恢复
+        const url = await Storage.getWidgetImage('bannerAvatar');
+        applyImage('bannerAvatar', 'bannerAvatarPlaceholder', url);
+
+        // 2. 创建 input & 绑定
         const wrap = document.querySelector('.banner-avatar-wrap');
-
-        // ★ 优先从 storage 恢复图片
-        const saved = Storage.getWidgetImage('bannerAvatar');
-        applyImage('bannerAvatar', 'bannerAvatarPlaceholder', saved);
-
-        // 动态创建 input
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        input.className = 'hidden-input';
-        input.id = 'bannerAvatarInput';
-        document.body.appendChild(input);
+        let input = document.getElementById('bannerAvatarInput');
+        if (!input) {
+            input = document.createElement('input');
+            input.type = 'file';
+            input.accept = 'image/*';
+            input.id = 'bannerAvatarInput';
+            input.style.display = 'none';
+            document.body.appendChild(input);
+        }
 
         wrap?.addEventListener('click', () => input.click());
 
         input.addEventListener('change', async () => {
-            const file = input.files[0];
+            const file = input.files?.[0];
             if (!file) return;
-            try {
-                const base64 = await readFileAsBase64(file);
-                // ★ 先存储，再更新 UI
-                Storage.setWidgetImage('bannerAvatar', base64);
-                applyImage('bannerAvatar', 'bannerAvatarPlaceholder', base64);
-            } catch (e) {
-                console.warn('[Avatar] 图片读取失败:', e);
-            }
             input.value = '';
+            try {
+                const newUrl = await Storage.setWidgetImage('bannerAvatar', file);
+                applyImage('bannerAvatar', 'bannerAvatarPlaceholder', newUrl);
+            } catch (e) {
+                console.warn('[Avatar] 上传失败:', e);
+            }
         });
     }
 
-    // ════════════════════════════════
-    //  格言（★ 持久化修复）
-    // ════════════════════════════════
+    /* ══════════════════════════════════════════
+       格言
+    ══════════════════════════════════════════ */
 
     function initBannerMotto() {
         const el = document.getElementById('bannerMotto');
         if (!el) return;
 
-        // ★ 从 storage 恢复文字
-        const saved = Storage.getWidgetText('bannerMotto', '幸好爱是小小的奇迹');
-        el.textContent = saved;
+        el.textContent = Storage.getWidgetText('bannerMotto', '幸好爱是小小的奇迹');
 
         el.addEventListener('click', () => {
-            openEditModal('编辑格言', el.textContent, (val) => {
-                const text = val || el.textContent;
-                el.textContent = text;
-                // ★ 立即持久化
-                Storage.setWidgetText('bannerMotto', text);
+            openEditModal('编辑格言', el.textContent, val => {
+                if (!val) return;
+                el.textContent = val;
+                Storage.setWidgetText('bannerMotto', val);
             });
         });
     }
 
-    // ════════════════════════════════
-    //  Baby / Contact（★ 持久化修复）
-    // ════════════════════════════════
+    /* ══════════════════════════════════════════
+       Baby / Contact
+    ══════════════════════════════════════════ */
 
     function initBannerInfo() {
         const fields = [
-            { id: 'infoBaby', label: '编辑 Baby', defaultVal: 'call Aero', editBtnSelector: '[data-target="infoBaby"]' },
-            { id: 'infoContact', label: '编辑 Contact', defaultVal: "http//>Aero's love.com", editBtnSelector: null }
+            {
+                id: 'infoBaby',
+                label: '编辑 Baby',
+                defaultVal: 'call Aero',
+                editBtnSel: '[data-target="infoBaby"]',
+            },
+            {
+                id: 'infoContact',
+                label: '编辑 Contact',
+                defaultVal: "http//>Aero's love.com",
+                editBtnSel: null,
+            },
         ];
 
-        fields.forEach(({ id, label, defaultVal, editBtnSelector }) => {
+        fields.forEach(({ id, label, defaultVal, editBtnSel }) => {
             const el = document.getElementById(id);
             if (!el) return;
 
-            // ★ 恢复持久化文字
             el.textContent = Storage.getWidgetText(id, defaultVal);
 
             const doEdit = () => {
-                openEditModal(label, el.textContent, (val) => {
-                    const text = val || el.textContent;
-                    el.textContent = text;
-                    Storage.setWidgetText(id, text);
+                openEditModal(label, el.textContent, val => {
+                    if (!val) return;
+                    el.textContent = val;
+                    Storage.setWidgetText(id, val);
                 });
             };
 
             el.addEventListener('click', doEdit);
-            if (editBtnSelector) {
-                document.querySelector(editBtnSelector)?.addEventListener('click', doEdit);
+            if (editBtnSel) {
+                document.querySelector(editBtnSel)?.addEventListener('click', e => {
+                    e.stopPropagation();
+                    doEdit();
+                });
             }
         });
     }
 
-    // ════════════════════════════════
-    //  拍立得（★ 持久化修复）
-    // ════════════════════════════════
+    /* ══════════════════════════════════════════
+       拍立得
+    ══════════════════════════════════════════ */
 
-    function initPolaroid() {
+    async function initPolaroid() {
         const card = document.getElementById('widgetPolaroid');
-
-        // ★ 恢复图片
-        const savedImg = Storage.getWidgetImage('polaroid');
-        applyImage('polaroidImg', 'polaroidPlaceholder', savedImg);
-
-        // ★ 恢复文字
         const textEl = document.getElementById('polaroidText');
+
+        // 1. 恢复图片
+        const url = await Storage.getWidgetImage('polaroid');
+        applyImage('polaroidImg', 'polaroidPlaceholder', url);
+
+        // 2. 恢复文字
         if (textEl) {
             textEl.textContent = Storage.getWidgetText('polaroidText', 'First Choice');
         }
 
-        // 绑定换图
-        bindImageUpload(card, 'polaroidFileInput', (base64) => {
-            Storage.setWidgetImage('polaroid', base64);
-            applyImage('polaroidImg', 'polaroidPlaceholder', base64);
-        });
+        // 3. 绑定换图（点击卡片，跳过文字区域点击）
+        const front = card?.querySelector('.polaroid-front');
+        if (front) {
+            const input = document.getElementById('polaroidFileInput')
+                || (() => {
+                    const el = document.createElement('input');
+                    el.type = 'file';
+                    el.accept = 'image/*';
+                    el.id = 'polaroidFileInput';
+                    el.style.display = 'none';
+                    document.body.appendChild(el);
+                    return el;
+                })();
 
-        // 绑定文字编辑
-        textEl?.addEventListener('click', (e) => {
+            front.addEventListener('click', e => {
+                if (e.target.closest('.polaroid-caption')) return;
+                input.click();
+            });
+
+            input.addEventListener('change', async () => {
+                const file = input.files?.[0];
+                if (!file) return;
+                input.value = '';
+                try {
+                    const newUrl = await Storage.setWidgetImage('polaroid', file);
+                    applyImage('polaroidImg', 'polaroidPlaceholder', newUrl);
+                } catch (e) {
+                    console.warn('[Polaroid] 上传失败:', e);
+                }
+            });
+        }
+
+        // 4. 绑定文字编辑
+        textEl?.addEventListener('click', e => {
             e.stopPropagation();
-            openEditModal('编辑说明文字', textEl.textContent, (val) => {
-                const text = val || textEl.textContent;
-                textEl.textContent = text;
-                Storage.setWidgetText('polaroidText', text);
+            openEditModal('编辑说明文字', textEl.textContent, val => {
+                if (!val) return;
+                textEl.textContent = val;
+                Storage.setWidgetText('polaroidText', val);
             });
         });
     }
 
-    // ════════════════════════════════
-    //  右侧图片框（★ 持久化修复）
-    // ════════════════════════════════
+    /* ══════════════════════════════════════════
+       右侧图片框
+    ══════════════════════════════════════════ */
 
-    function initPhotoBox() {
+    async function initPhotoBox() {
         const card = document.getElementById('widgetPhotoBox');
 
-        // ★ 恢复图片
-        const savedImg = Storage.getWidgetImage('photoBox');
-        applyImage('photoBoxImg', 'photoBoxPlaceholder', savedImg);
+        // 1. 恢复图片
+        const url = await Storage.getWidgetImage('photoBox');
+        applyImage('photoBoxImg', 'photoBoxPlaceholder', url);
 
-        // 绑定换图
-        bindImageUpload(card, 'photoBoxFileInput', (base64) => {
-            Storage.setWidgetImage('photoBox', base64);
-            applyImage('photoBoxImg', 'photoBoxPlaceholder', base64);
+        // 2. 绑定换图
+        const input = document.getElementById('photoBoxFileInput')
+            || (() => {
+                const el = document.createElement('input');
+                el.type = 'file';
+                el.accept = 'image/*';
+                el.id = 'photoBoxFileInput';
+                el.style.display = 'none';
+                document.body.appendChild(el);
+                return el;
+            })();
+
+        card?.addEventListener('click', () => input.click());
+
+        input.addEventListener('change', async () => {
+            const file = input.files?.[0];
+            if (!file) return;
+            input.value = '';
+            try {
+                const newUrl = await Storage.setWidgetImage('photoBox', file);
+                applyImage('photoBoxImg', 'photoBoxPlaceholder', newUrl);
+            } catch (e) {
+                console.warn('[PhotoBox] 上传失败:', e);
+            }
         });
     }
 
-    // ════════════════════════════════
-    //  入口
-    // ════════════════════════════════
-    function init() {
+    /* ══════════════════════════════════════════
+       入口
+    ══════════════════════════════════════════ */
+
+    async function init() {
         bindModalActions();
-        initBannerAvatar();
+
+        // 并行初始化，加快启动速度
+        await Promise.all([
+            initBannerAvatar(),
+            initPolaroid(),
+            initPhotoBox(),
+        ]);
+
+        // 文字类同步初始化
         initBannerMotto();
         initBannerInfo();
-        initPolaroid();
-        initPhotoBox();
     }
 
     return { init };

@@ -12,18 +12,18 @@
     <link rel="apple-touch-icon" href="icons/icon-192.png" />
     <title>HomeScreen</title>
 
-    <!-- CSS：基础 -->
     <link rel="stylesheet" href="css/reset.css" />
     <link rel="stylesheet" href="css/phone.css" />
     <link rel="stylesheet" href="css/widgets.css" />
     <link rel="stylesheet" href="css/apps.css" />
     <link rel="stylesheet" href="css/dock.css" />
-    <!-- CSS：内页 -->
     <link rel="stylesheet" href="css/pages.css" />
     <link rel="stylesheet" href="css/settings.css" />
     <link rel="stylesheet" href="css/api-settings.css" />
-    <!-- ★ 新增：屏幕调整页样式 -->
     <link rel="stylesheet" href="css/screen-settings.css" />
+    <!-- ★ 新增 -->
+    <link rel="stylesheet" href="css/wallpaper-settings.css" />
+    <link rel="stylesheet" href="css/weather.css" />
 </head>
 
 <body>
@@ -31,7 +31,7 @@
     <div class="phone-shell" id="phoneShell">
         <div class="screen" id="screen">
 
-            <!-- ══ 状态栏（始终显示） ══ -->
+            <!-- ══ 状态栏 ══ -->
             <div class="status-bar" id="statusBar">
                 <span class="status-time" id="statusTime">00:00</span>
                 <div class="status-icons">
@@ -41,7 +41,18 @@
                 </div>
             </div>
 
-            <!-- ══ 屏幕整体色调滤镜层（screen-settings 控制） ══ -->
+            <!-- ══ 壁纸层（最底层，page-container 之下） ══ -->
+            <div class="wallpaper-layer" id="wallpaperLayer">
+                <!-- 壁纸图片本体 -->
+                <div class="wallpaper-img-wrap" id="wallpaperImgWrap"></div>
+                <!-- 毛玻璃 / 模糊 / 不透明度遮罩由 CSS 变量控制 -->
+                <div class="wallpaper-overlay" id="wallpaperOverlay"></div>
+            </div>
+
+            <!-- ★ 天气动态效果层 -->
+            <canvas class="weather-canvas" id="weatherCanvas"></canvas>
+
+            <!-- ══ 色调滤镜覆盖层 ══ -->
             <div class="screen-filter-overlay" id="screenFilterOverlay"></div>
 
             <!-- ══ 页面容器 ══ -->
@@ -109,9 +120,9 @@
 
                         <section class="app-grid" id="appGrid"></section>
 
-                    </div><!-- /screen-scroll -->
+                    </div>
                     <nav class="dock" id="dock"></nav>
-                </div><!-- /page-home -->
+                </div>
 
                 <!-- ── 设置主页 ── -->
                 <div class="page page-settings" id="pageSettings"></div>
@@ -119,13 +130,16 @@
                 <!-- ── API 设置页 ── -->
                 <div class="page page-api-settings" id="pageApiSettings"></div>
 
-                <!-- ★ 屏幕调整页 ── -->
+                <!-- ── 屏幕调整页 ── -->
                 <div class="page page-screen-settings" id="pageScreenSettings"></div>
 
-            </div><!-- /page-container -->
+                <!-- ★ 壁纸设置页 -->
+                <div class="page page-wallpaper-settings" id="pageWallpaperSettings"></div>
 
-        </div><!-- /screen -->
-    </div><!-- /phone-shell -->
+            </div>
+
+        </div>
+    </div>
 
     <!-- 通用编辑弹窗 -->
     <div class="edit-modal" id="editModal">
@@ -141,7 +155,6 @@
 
     <div class="api-toast" id="apiToast"></div>
 
-    <!-- JS -->
     <script src="js/storage.js"></script>
     <script src="js/grid.js"></script>
     <script src="js/router.js"></script>
@@ -150,6 +163,9 @@
     <script src="js/settings.js"></script>
     <script src="js/api-settings.js"></script>
     <script src="js/screen-settings.js"></script>
+    <!-- ★ 新增 -->
+    <script src="js/weather.js"></script>
+    <script src="js/wallpaper-settings.js"></script>
     <script src="js/main.js"></script>
 
 </body>
